@@ -1,45 +1,30 @@
 #!/usr/bin/python3
-""" A flask server to return id and name of a State object
-
-Returns:
-    _type_: _description_
+"""Starts a Flask web application.
+The application listens on 0.0.0.0, port 5000.
+Routes:
+    /hbnb_filters: HBnB HTML filters page.
 """
-from flask import Flask, render_template
 from models import storage
-from models.amenity import Amenity
-from models.state import State
-import os
+from flask import Flask
+from flask import render_template
 
 app = Flask(__name__)
 
 
+@app.route("/hbnb_filters", strict_slashes=False)
+def hbnb_filters():
+    """Displays the main HBnB filters HTML page."""
+    states = storage.all("State")
+    amenities = storage.all("Amenity")
+    return render_template("10-hbnb_filters.html",
+                           states=states, amenities=amenities)
+
+
 @app.teardown_appcontext
-def teardown(exception):
-    """ remove the current SQLAlchemy Session """
+def teardown(exc):
+    """Remove the current SQLAlchemy session."""
     storage.close()
 
 
-@app.route('/hbnb_filters', strict_slashes=False)
-def hbnb_filters():
-    """ display a HTML page """
-    # return a list of State object.
-    states = list(storage.all(State).values())
-    # sort by name with case insensitive
-    states = sorted(states, key=lambda state: state.name.lower())
-
-    amenities = list(storage.all(Amenity).values())
-    states_dict = {}
-    for state in states:
-        if os.getenv('HBNB_TYPE_STORAGE') == 'db':
-            states_dict[state] = sorted(
-                state.cities, key=lambda city: city.name)
-        else:
-            states_dict[state] = sorted(
-                state.cities(), key=lambda city: city.name.lower())
-
-    return render_template('10-hbnb_filters.html',
-                           states=states_dict, amenities=amenities)
-
-
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host="0.0.0.0")
