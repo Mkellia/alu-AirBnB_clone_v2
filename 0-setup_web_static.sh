@@ -12,7 +12,7 @@ sudo apt-get -y install nginx
 sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
 
 # Create the HTML file with the specified content
-cat <<EOF | sudo tee /data/web_static/releases/test/0-index.html
+cat <<EOF | sudo tee /data/web_static/releases/test/index.html
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -34,13 +34,13 @@ EOF
 sudo rm -rf /data/web_static/current
 
 # Create a new symbolic link to the test release
-sudo ln -s /data/web_static/releases/test/ /data/web_static/current
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
 # Change ownership of the /data/ directory to the ubuntu user and group
 sudo chown -R ubuntu:ubuntu /data/
 
 # Update the Nginx configuration to serve the content
-sudo sed -i '44i \\n\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t\tindex 0-index.html;\n\t}' /etc/nginx/sites-available/default
+sudo sed -i '/server_name _;/a \\n\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t\tindex index.html;\n\t}' /etc/nginx/sites-available/default
 
 # Restart the Nginx service to apply the changes
 sudo service nginx restart
