@@ -2,7 +2,7 @@
 #web_static development
 
 sudo apt -y update
-#sudo apt-get -y upgrade
+sudo apt-get -y upgrade
 sudo apt -y install nginx
 sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
 echo "Hello, this is a test HTML file." | sudo tee /data/web_static/releases/test/index.html
